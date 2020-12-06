@@ -53,3 +53,31 @@ where
 
     outp
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_args_filter() {
+        let args = filter(
+            vec![
+                "--all",
+                "-am",
+                "stripped message",
+                "-c",
+                "123",
+                "--fixup=321",
+                "--message=test",
+                "test",
+            ]
+            .iter()
+            .map(|x| x.to_string()),
+        );
+
+        assert_eq!(
+            args,
+            vec!["--all", "-a", "-c", "123", "--fixup=321", "test"]
+        );
+    }
+}
