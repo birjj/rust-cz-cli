@@ -1,4 +1,6 @@
+mod adapters;
 mod args_filter;
+mod commitizen;
 mod git;
 
 use quick_error::quick_error;
@@ -13,6 +15,10 @@ quick_error! {
         GitError(err: git::Error) {
             from()
             display("Git error: {}", err)
+        }
+        CommitizenError(err: commitizen::Error) {
+            from()
+            display("Commitizen error: {}", err)
         }
     }
 }
@@ -35,6 +41,8 @@ fn main() -> Result<(), Error> {
     }
 
     // TODO: implement hook mode
+
+    commitizen::commit()?;
 
     Ok(())
 }
