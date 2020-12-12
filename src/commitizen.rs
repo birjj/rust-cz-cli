@@ -4,6 +4,7 @@ use directories::ProjectDirs;
 use quick_error::quick_error;
 
 use super::adapters;
+use super::git;
 
 quick_error! {
     /// Commitizen error
@@ -20,6 +21,10 @@ quick_error! {
             from()
             display("Adapter error: {}", err)
         }
+        Git(err: git::Error) {
+            from()
+            display("Git error: {}", err)
+        }
     }
 }
 
@@ -32,7 +37,9 @@ pub fn commit() -> Result<(), Error> {
 
     // TODO: implement retryLastCommit
 
-    println!("{}", adapters::conventional_changelog::prompt()?);
+    let msg = adapters::conventional_changelog::prompt()?;
+
+    git::commit(msg)?;
 
     Ok(())
 }
