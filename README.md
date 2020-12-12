@@ -1,4 +1,4 @@
-# rust-commitizen
+# rust-cz-cli
 
 An implementation of [cz-cli](https://github.com/commitizen/cz-cli) in Rust. Aims to be a drop-in replacement for git-cz with significantly better performance.
 

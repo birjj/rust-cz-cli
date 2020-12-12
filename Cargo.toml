@@ -1,5 +1,5 @@
 [package]
-name = "commitizen-rs"
+name = "cz-cli-rs"
 version = "0.1.0"
 authors = ["birjolaxew <johanringmann@gmail.com>"]
 edition = "2018"
