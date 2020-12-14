@@ -10,8 +10,8 @@ quick_error! {
             from()
             display("I/O error: {}", err)
         }
-        GitError(exit_code: i32, stderr: Vec<u8>) {
-            display("Git exited with error {}: {:?}", exit_code, stderr)
+        GitError(exit_code: i32, stderr: String) {
+            display("Git exited with error {}: {}", exit_code, stderr)
         }
     }
 }
@@ -25,16 +25,18 @@ where
 {
     let outp = Command::new("git").args(args).output()?;
     if strict && !outp.status.success() {
-        return Err(Error::GitError(outp.status.code().unwrap(), outp.stderr));
+        return Err(Error::GitError(
+            outp.status.code().unwrap(),
+            String::from_utf8(outp.stdout).unwrap(),
+        ));
     }
     Ok(outp)
 }
 
 /// Check if the staging area is clean
 pub fn staging_is_clean() -> Result<bool, Error> {
-    let non_cached = execute(&["diff", "--no-ext-diff", "--name-only"], true)?;
     let cached = execute(&["diff", "--no-ext-diff", "--cached", "--name-only"], true)?;
-    Ok(non_cached.stdout.len() == 0 && cached.stdout.len() == 0)
+    Ok(cached.stdout.len() == 0)
 }
 
 /// Commit the current staging area with a given message
@@ -53,7 +55,10 @@ pub fn commit(msg: String) -> Result<(), Error> {
                   git config --global user.email \"you@example.com\"
                   git config --global user.name \"Your Name\""});
         }
-        return Err(Error::GitError(code, outp.stderr));
+        return Err(Error::GitError(
+            code,
+            String::from_utf8(outp.stdout).unwrap(),
+        ));
     }
 
     Ok(())

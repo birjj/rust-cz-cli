@@ -18,3 +18,18 @@ quick_error! {
         }
     }
 }
+
+pub trait Adapter {
+    fn prompt(&self) -> Result<String, Error>;
+}
+impl Adapter for fn() -> Result<String, Error> {
+    fn prompt(&self) -> Result<String, Error> {
+        self()
+    }
+}
+
+pub fn get_by_name(name: &String) -> Option<Box<dyn Adapter>> {
+    return Some(Box::new(
+        conventional_changelog::prompt as fn() -> Result<String, Error>,
+    ));
+}

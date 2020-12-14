@@ -36,6 +36,7 @@ fn main() -> Result<(), Error> {
     let filtered_args = args_filter::filter(raw_git_args.iter());
 
     let retry_last_commit = filtered_args.get(0) == Some(&"--retry".to_string());
+    let config = config::load(None);
     let staging_is_clean = git::staging_is_clean()?;
 
     if staging_is_clean && !filtered_args.contains(&"--allow-empty".to_string()) {
