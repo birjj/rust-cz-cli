@@ -1,0 +1,10 @@
+{
+    "name": "rust-cz-cli-test",
+    "version": "0.0.0",
+    "description": "Test file for rust-cz-cli",
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    }
+}

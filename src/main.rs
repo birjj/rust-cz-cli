@@ -1,6 +1,7 @@
 mod adapters;
 mod args_filter;
 mod commitizen;
+mod config;
 mod git;
 
 use quick_error::quick_error;
