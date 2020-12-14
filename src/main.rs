@@ -25,12 +25,15 @@ quick_error! {
 }
 
 fn main() -> Result<(), Error> {
-    let raw_git_args = std::env::args().skip(1);
-    let filtered_args = args_filter::filter(raw_git_args);
-
-    if filtered_args.contains(&"--amend".to_string()) {
-        // TODO: implement --amend override as in commitizen/cli/strategies/git-cz.js
+    let raw_git_args: Vec<String> = std::env::args().skip(1).collect();
+    // if we're amending, just run git as normal
+    if raw_git_args.contains(&"--amend".to_string()) {
+        git::execute::<Vec<String>, String>(raw_git_args, true)?;
+        return Ok(());
     }
+
+    // otherwise remove any potential message and generate our own
+    let filtered_args = args_filter::filter(raw_git_args.iter());
 
     let retry_last_commit = filtered_args.get(0) == Some(&"--retry".to_string());
     let staging_is_clean = git::staging_is_clean()?;

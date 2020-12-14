@@ -3,9 +3,9 @@ use regex::Regex;
 
 /// Rust implementation of cz-cli/src/cli/parser/git-cz.js
 /// Parses the given arguments into a Vec of args we've seen, while removing any message declaration
-pub fn filter<A>(args: A) -> Vec<String>
+pub fn filter<'a, A>(args: A) -> Vec<String>
 where
-    A: Iterator<Item = String>,
+    A: Iterator<Item = &'a String>,
 {
     lazy_static! {
         static ref RE_SHORT_MESSAGE: Regex = Regex::new(r"^-([a-zA-Z]*)m(.*)$").unwrap();
@@ -48,7 +48,7 @@ where
             None => {}
         }
 
-        outp.push(arg);
+        outp.push(arg.to_owned());
     }
 
     outp
@@ -62,17 +62,16 @@ mod tests {
     fn test_args_filter() {
         let args = filter(
             vec![
-                "--all",
-                "-am",
-                "stripped message",
-                "-c",
-                "123",
-                "--fixup=321",
-                "--message=test",
-                "test",
+                "--all".to_string(),
+                "-am".to_string(),
+                "stripped message".to_string(),
+                "-c".to_string(),
+                "123".to_string(),
+                "--fixup=321".to_string(),
+                "--message=test".to_string(),
+                "test".to_string(),
             ]
-            .iter()
-            .map(|x| x.to_string()),
+            .iter(),
         );
 
         assert_eq!(

@@ -18,7 +18,7 @@ quick_error! {
 
 /// Execute a git command
 /// If strict is true, the Result is an error if git exits with code != 0
-fn execute<I, S>(args: I, strict: bool) -> Result<Output, Error>
+pub fn execute<I, S>(args: I, strict: bool) -> Result<Output, Error>
 where
     I: IntoIterator<Item = S>,
     S: AsRef<std::ffi::OsStr>,
