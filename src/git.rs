@@ -16,13 +16,15 @@ quick_error! {
     }
 }
 
-fn execute<I, S>(args: I) -> Result<Output, Error>
+/// Execute a git command
+/// If strict is true, the Result is an error if git exits with code != 0
+fn execute<I, S>(args: I, strict: bool) -> Result<Output, Error>
 where
     I: IntoIterator<Item = S>,
     S: AsRef<std::ffi::OsStr>,
 {
     let outp = Command::new("git").args(args).output()?;
-    if !outp.status.success() {
+    if strict && !outp.status.success() {
         return Err(Error::GitError(outp.status.code().unwrap(), outp.stderr));
     }
     Ok(outp)
@@ -30,8 +32,8 @@ where
 
 /// Check if the staging area is clean
 pub fn staging_is_clean() -> Result<bool, Error> {
-    let non_cached = execute(&["diff", "--no-ext-diff", "--name-only"])?;
-    let cached = execute(&["diff", "--no-ext-diff", "--cached", "--name-only"])?;
+    let non_cached = execute(&["diff", "--no-ext-diff", "--name-only"], true)?;
+    let cached = execute(&["diff", "--no-ext-diff", "--cached", "--name-only"], true)?;
     Ok(non_cached.stdout.len() == 0 && cached.stdout.len() == 0)
 }
 
@@ -40,7 +42,7 @@ pub fn commit(msg: String) -> Result<(), Error> {
     // TODO: implement hookMode
 
     let args = ["commit", "-m", &msg];
-    let outp = Command::new("git").args(&args).output()?;
+    let outp = execute(&args, false)?;
 
     if !outp.status.success() {
         let code = outp.status.code().unwrap();
